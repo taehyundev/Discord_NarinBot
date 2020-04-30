@@ -74,7 +74,7 @@ async def on_message(message):
             search = False
 
 if __name__ == "__main__":
-    with open('./data/token.json', 'r') as f:
+    with open('data/token.json', 'r') as f:
         json_data = json.load(f)
     token = json_data["value"]
     client.run(token)
