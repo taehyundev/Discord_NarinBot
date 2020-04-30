@@ -1,6 +1,8 @@
 import discord
 import asyncio
 import openpyxl
+import json
+
 client = discord.Client()
 
 
@@ -20,38 +22,48 @@ async def on_message(message):
         sheet = file.active
         for i in range(1, 251):
             sheet["A"+str(i)].value = "-"
-        await client.send_message(message.channel, "기억초기화 완료")
+        await message.channel.send("기억초기화 완료")
         file.save("memory.xlsx")
 
     if message.content.startswith("!학습"):
         file = openpyxl.load_workbook('memory.xlsx')
         sheet = file.active
-        learn = message.content.split(" ")
+        learn = message.content.split(":")
+        '''
+        if len(learn) > 3 :
+            for i in range(3,len(learn)):
+                learn[2] = learn[2] + " "+ learn[i]
+                '''
+        learn[0] = learn[0].replace("!학습 ", "")
         for i in range(1, 201):
             if sheet["A"+str(i)].value == "-":
               #  await client.send_message(message.channel, "기억되었습니당")
-                sheet["A" + str(i)].value = learn[1]
-                sheet["B" + str(i)].value = learn[2]
+                sheet["A" + str(i)].value = learn[0]
+                sheet["B" + str(i)].value = learn[1]
                 break
         file.save("memory.xlsx")
     if message.content.startswith("!리스트"):
         await message.channel.send("<현재 학습리스트>")
         file = openpyxl.load_workbook('memory.xlsx')
         sheet = file.active
+        data = ""
+
         for i in range(1, 201):
-            if sheet["A"+str(i)].value == "-":
-                await message.channel.send("끗")
+            if sheet["A" + str(i)].value == "-" and i == 1:
+                await message.channel.send(message.channel, "데이터 없음")
+            if sheet["A" + str(i)].value == "-":
                 break
-            else:
-                await message.channel.send(sheet["A"+str(i)].value+", "+ sheet["B" + str(i)].value)
+            data = data + "질문 : "+sheet["A" + str(i)].value + ", 답변 : "+ sheet["B" + str(i)].value + "\n"
+        await message.channel.send(data)  
         print("Good ! ")
     if message.content.startswith("+ "):
         file = openpyxl.load_workbook('memory.xlsx')
         sheet = file.active
-        memory = message.content.split(" ")
+        memory = message.content
+        memory = memory.replace("+ ", "")
         search = False
         for i in range(1, 201):
-            if sheet["A" + str(i)].value == memory[1]:
+            if sheet["A" + str(i)].value == memory:
                 await message.channel.send(sheet["B" + str(i)].value)
                 search = True
                 break
@@ -61,6 +73,8 @@ async def on_message(message):
         else:
             search = False
 
-
-
-client.run('token')
+if __name__ == "__main__":
+    with open('token.json', 'r') as f:
+        json_data = json.load(f)
+    token = json_data["value"]
+    client.run(token)
