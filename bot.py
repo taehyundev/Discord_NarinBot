@@ -2,7 +2,11 @@ import discord
 import asyncio
 import openpyxl
 import json
-
+from discord import Member
+from discord.ext import commands
+from bs4 import BeautifulSoup
+from urllib.request import urlopen
+from datetime import datetime
 client = discord.Client()
 
 
@@ -17,6 +21,34 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    if message.content.startswith("#help"):
+        await message.channel.send("< Menual >")
+        embed = discord.Embed(
+        title = '명령어',
+        colour = discord.Colour.blue()
+        )
+        embed.add_field(value = '@github <닉네임>', name = 'github에 커밋을 얼마나 올렸는지를 체크할 수 있다.\n',inline = False)
+        embed.add_field(value='!기억초기화 or !기억 초기화', name='학습시킨 데이터를 모두 초기화 시킬 수 있다.\n', inline=False)
+        embed.add_field(value='!학습 [질문] [답변]', name='질문에 대응하여 답변을 하게끔 학습을 시킬 수 있다.\n', inline=False)
+        embed.add_field(value='+ [질문]', name='narinBot에게 질문을 할 수 있다.\n', inline=False)
+        await message.channel.send(embed=embed)
+            
+
+    if message.content.startswith("@github"):
+        try:
+            date = datetime.today().strftime("%Y-%m-%d")
+            name = message.content.split(" ")
+            response = urlopen('https://github.com/'+name[1])
+            soup = BeautifulSoup(response, 'html.parser')
+            for data in soup.find_all(class_='day'):
+                if(data["data-date"] == date):
+                    if(int(data["data-count"]) == 0 ):
+                        await message.channel.send("커밋을 하나도 안했네요??..?")
+                    else:
+                        await message.channel.send("커밋을 "+data["data-count"]+" 만큼 올리셨군요!")
+        except:
+            await message.channel.send("값을 잘못입력하셨군요..!")
+
     if message.content.startswith("!기억 초기화") or message.content.startswith("!기억초기화"):
         file = openpyxl.load_workbook("memory.xlsx")
         sheet = file.active
@@ -29,11 +61,7 @@ async def on_message(message):
         file = openpyxl.load_workbook('memory.xlsx')
         sheet = file.active
         learn = message.content.split(":")
-        '''
-        if len(learn) > 3 :
-            for i in range(3,len(learn)):
-                learn[2] = learn[2] + " "+ learn[i]
-                '''
+
         learn[0] = learn[0].replace("!학습 ", "")
         for i in range(1, 201):
             if sheet["A"+str(i)].value == "-":
