@@ -7,17 +7,20 @@ from discord.ext import commands
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 from datetime import datetime
+from modules import getdata
 client = discord.Client()
 
+## Setting
+member = ['narinn-star', 'min-0', 'taehyundev','Good-jjun','lee-hanju']
 
+
+## Event
 @client.event
 async def on_ready():
     print(client.user.id)
     print("ready")
     game = discord.Game("식사")
     await client.change_presence(status=discord.Status.online, activity=game)
-
-
 
 @client.event
 async def on_message(message):
@@ -33,19 +36,24 @@ async def on_message(message):
         embed.add_field(value='+ [질문]', name='narinBot에게 질문을 할 수 있다.\n', inline=False)
         await message.channel.send(embed=embed)
             
-
+       
     if message.content.startswith("@github"):
         try:
-            date = datetime.today().strftime("%Y-%m-%d")
             name = message.content.split(" ")
-            response = urlopen('https://github.com/'+name[1])
-            soup = BeautifulSoup(response, 'html.parser')
-            for data in soup.find_all(class_='day'):
-                if(data["data-date"] == date):
-                    if(int(data["data-count"]) == 0 ):
-                        await message.channel.send("커밋을 하나도 안했네요??..?")
+            if name[1] == '-all':
+                for i in range(len(member)):
+                    datacount =getdata.getCommitData(member[i])
+                    print(datacount)
+                    if datacount == 0:
+                        await message.channel.send(member[i]+"님, 커밋을 하나도 안했네요??..?") 
                     else:
-                        await message.channel.send("커밋을 "+data["data-count"]+" 만큼 올리셨군요!")
+                        await message.channel.send(member[i]+"님,커밋을 "+str(datacount)+" 만큼 올리셨군요!")
+            else:
+                datacount =getdata.getCommitData(name[1])
+                if datacount == 0:
+                    await message.channel.send(name[1]+"님, 커밋을 하나도 안했네요??..?") 
+                else:
+                    await message.channel.send(name[1]+"님,커밋을 "+str(datacount)+" 만큼 올리셨군요!")
         except:
             await message.channel.send("값을 잘못입력하셨군요..!")
 
