@@ -36,11 +36,23 @@ async def on_message(message):
         embed.add_field(value='+ [질문]', name='narinBot에게 질문을 할 수 있다.\n', inline=False)
         await message.channel.send(embed=embed)
             
-       
+    ### github   
     if message.content.startswith("@github"):
         try:
             name = message.content.split(" ")
-            if name[1] == '-all':
+            #tier System
+            if name[1] == '-rank':
+                if len(name) ==3:
+                    score = getdata.getContribution_one(name[2])
+                    tier = getdata.getRank_one(score)
+                    await message.channel.send(name[2] + "님의 티어는 "+tier+"입니다.!!")
+                elif len(name) ==2:
+                    info = getdata.getContribution(member)
+                    tierinfo = getdata.getRank(info)
+                    name_keys = tierinfo.keys()
+                    for name in name_keys:
+                        await message.channel.send(name + "님의 티어는 "+tierinfo[name]+"입니다.!!")
+            elif name[1] == '-all':
                 for i in range(len(member)):
                     datacount =getdata.getCommitData(member[i])
                     print(datacount)
@@ -57,6 +69,8 @@ async def on_message(message):
         except:
             await message.channel.send("값을 잘못입력하셨군요..!")
 
+
+    ## 데이터 학습
     if message.content.startswith("!기억 초기화") or message.content.startswith("!기억초기화"):
         file = openpyxl.load_workbook("memory.xlsx")
         sheet = file.active
@@ -108,6 +122,11 @@ async def on_message(message):
             await message.channel.send("무슨 뜻인지 모르겠어요..")
         else:
             search = False
+    if message.content.startswith('A'):
+        if(message.content.startswith('B')):
+            print('a')
+        print('aaaa')
+
 
 if __name__ == "__main__":
     with open('data/token.json', 'r') as f:
