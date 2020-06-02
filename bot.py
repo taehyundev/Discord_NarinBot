@@ -55,7 +55,7 @@ async def on_message(message):
             elif name[1] == '-all':
                 for i in range(len(member)):
                     datacount =getdata.getCommitData(member[i])
-                    print(datacount)
+                    print(type(datacount))
                     if datacount == 0:
                         await message.channel.send(member[i]+"님, 커밋을 하나도 안했네요??..?") 
                     else:
@@ -122,10 +122,6 @@ async def on_message(message):
             await message.channel.send("무슨 뜻인지 모르겠어요..")
         else:
             search = False
-    if message.content.startswith('A'):
-        if(message.content.startswith('B')):
-            print('a')
-        print('aaaa')
 
 
 if __name__ == "__main__":

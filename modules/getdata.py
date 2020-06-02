@@ -20,7 +20,7 @@ def getContribution(allMember):
             score = 0
             if(re.findall("\d", data.get_text(" ", strip=True))):
                 score = re.findall("\d+", data.get_text(" ", strip=True))
-                rankInfo[allMember[i]] = str(score[0])
+                rankInfo[allMember[i]] = str(''.join(score))
    # Rankdata = getRank(rankInfo)
     return rankInfo
 
@@ -31,7 +31,7 @@ def getContribution_one(member):
         score = 0
         if(re.findall("\d", data.get_text(" ", strip=True))):
             score = re.findall("\d+", data.get_text(" ", strip=True))
-            return str(score[0])
+            return str(''.join(score))
 
 
 #tier System
@@ -104,6 +104,7 @@ def getRank_one(score):
         rtntier=tier[2] + str(tier_cnt)
         
     elif 1000<int(score) and int(score)<=5000:
+        print("a")
         cnt =1
         for i in range(1001,int(score)+1):
             if cnt% 1000 == 0:
