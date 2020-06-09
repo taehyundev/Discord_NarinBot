@@ -60,6 +60,15 @@ async def on_message(message):
                         await message.channel.send(member[i]+"님, 커밋을 하나도 안했네요??..?") 
                     else:
                         await message.channel.send(member[i]+"님,커밋을 "+str(datacount)+" 만큼 올리셨군요!")
+            elif name[1] == '-total':
+            
+                score = getdata.getContribution_one(name[2])
+                await message.channel.send(name[2]+"님의 total값은 "+str(score)+" 입니다.!")
+            elif name[1] == '-total-all':
+                info = getdata.getContribution(member)
+                info_keys = info.keys()
+                for i in info_keys:
+                    await message.channel.send(i+"님의 total값은 "+str(info[i])+" 입니다.!")   
             else:
                 datacount =getdata.getCommitData(name[1])
                 if datacount == 0:
